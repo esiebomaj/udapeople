@@ -6,7 +6,7 @@ jobs:
       - image: cimg/node:13.8.0
     steps:
       - checkout
-        path: ./frontend
+        path: "./frontend"
       - run: cd frontend
       - run: ls
       - run: npm install
@@ -17,7 +17,7 @@ jobs:
       - image: cimg/node:13.8.0
     steps:
       - checkout
-        path: ./backend
+        path: "./backend"
       - run: cd backend
       - run: npm install
       - run: npm run build
