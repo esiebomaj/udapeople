@@ -6,20 +6,16 @@ jobs:
       - image: cimg/node:13.8.0
     steps:
       - checkout
-      - run: cd frontend
-      - run: ls
-      - run: npm install
-      - run: ls
-      - run: npm run build
+      - run: cd frontend && npm install
+      - run: cd frontend && npm run build
 
   build-backend:
     docker:
       - image: cimg/node:13.8.0
     steps:
       - checkout
-      - run: cd backend
-      - run: npm install
-      - run: npm run build
+      - run: cd backend && npm install
+      - run: cd backend && npm run build
 
 workflows:
   build_and_test:
