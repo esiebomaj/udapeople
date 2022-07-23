@@ -60,7 +60,7 @@ jobs:
       - checkout
       - run: cd backend && npm install
       - run: cd backend && npm audit fix --audit-level=critical --force
-      - run: cd backend && npm audit --audit-level=critical
+      # - run: cd backend && npm audit --audit-level=critical
       - slack/notify:
           event: pass
           template: basic_success_1
