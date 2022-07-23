@@ -44,6 +44,14 @@ jobs:
       - run: cd frontend && npm install
       - run: cd frontend && npm audit fix --audit-level=critical --force
       - run: cd frontend && npm audit --audit-level=critical
+      - slack/notify:
+          event: pass
+          template: basic_success_1
+          channel: C03DAJYL3SM
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
+          channel: C03DAJYL3SM
 
   scan-backend:
     docker:
@@ -53,6 +61,14 @@ jobs:
       - run: cd backend && npm install
       - run: cd backend && npm audit fix --audit-level=critical --force
       - run: cd backend && npm audit --audit-level=critical
+      - slack/notify:
+          event: pass
+          template: basic_success_1
+          channel: C03DAJYL3SM
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
+          channel: C03DAJYL3SM
 
 workflows:
   build_and_test:
