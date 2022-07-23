@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs: 
+  slack: circleci/slack@4.10.1
+
 jobs:
   build-frontend:
     docker:
@@ -39,9 +42,8 @@ jobs:
     steps:
       - checkout
       - run: cd frontend && npm install
-        # npm install oauth-sign@^0.9.0
       - run: cd frontend && npm audit fix --audit-level=critical --force
-      - run: cd frontend && npm audit --audit-level=critical
+      # - run: cd frontend && npm audit --audit-level=critical
 
   scan-backend:
     docker:
@@ -49,10 +51,8 @@ jobs:
     steps:
       - checkout
       - run: cd backend && npm install
-        # npm install oauth-sign@^0.9.0
-
       - run: cd backend && npm audit fix --audit-level=critical --force
-      - run: cd backend && npm audit --audit-level=critical
+      # - run: cd backend && npm audit --audit-level=critical
 
 workflows:
   build_and_test:
