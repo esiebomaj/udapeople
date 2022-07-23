@@ -22,5 +22,5 @@ jobs:
 workflows:
   build_and_test:
     jobs:
-      - build
-      - test
+      - build-frontend
+      - build-backend
