@@ -7,7 +7,6 @@ jobs:
     steps:
       - checkout:
           path: "./frontend"
-      - run: cd frontend
       - run: ls
       - run: npm install
       - run: npm run build
