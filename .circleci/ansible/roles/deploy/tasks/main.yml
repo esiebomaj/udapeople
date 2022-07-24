@@ -1,5 +1,6 @@
 ---
 - name: Creates web directory
+  become: yes
   file:
     path: ~/udapeople
     state: directory
@@ -12,16 +13,16 @@
 
 - name: extract server files
   become: yes
-  shell: tar -xvzf artifact.tar.gz -C ~/udapeople/server/
+  shell: tar -xvzf ~/udapeople/artifact.tar.gz -C ~/udapeople/
 
 - name: install deps
   become: yes
-  shell: cd ~/udapeople/server/ && npm install
+  shell: cd ~/udapeople/ && npm install
 
 - name: stop any running webserver
   become: yes
-  shell: pm2 stop default
+  shell: cd ~/udapeople/ && pm2 stop default
 
 - name: start web server
   become: yes
-  shell: pm2 start npm -- start
+  shell: cd ~/udapeople/ && pm2 start npm -- start
