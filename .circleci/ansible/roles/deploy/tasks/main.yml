@@ -19,6 +19,17 @@
   become: yes
   shell: cd ~/udapeople/ && npm install
 
+- name: view directory
+- shell: chdir="~/udapeople/" ls
+  register: result
+  tags: t1
+
 - name: stop any other pm2 server and start web server
   become: yes
   shell: (cd ~/udapeople/ && pm2 stop default); (cd ~/udapeople/ && pm2 start npm -- start)
+  register: result
+  tags: t2
+
+- debug:
+    var: result.stdout
+  tags: always
