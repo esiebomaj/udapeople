@@ -183,7 +183,7 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - checkout
-      - run: apt install nodejs -y
+      - run: yum install -y nodejs
       - install_tar_utility
       - attach_workspace:
           at: ./
@@ -209,7 +209,7 @@ jobs:
       - checkout
       - add_ssh_keys:
           fingerprints: ["a8:db:51:9a:82:49:74:d7:1b:35:99:f6:b5:5a:18:3f"] 
-      - run: apt install nodejs -y
+      - run: yum install -y nodejs
       - install_tar_utility
       - attach_workspace:
           at: ./
