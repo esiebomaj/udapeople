@@ -211,7 +211,7 @@ jobs:
           fingerprints: ["a8:db:51:9a:82:49:74:d7:1b:35:99:f6:b5:5a:18:3f"] 
       - run: curl --silent --location https://rpm.nodesource.com/setup_16.x | bash -
       - run: yum -y install nodejs
-      - run: apk install -y python3
+      - run: python --version
       - install_tar_utility
       # - attach_workspace:
       #     at: ./
