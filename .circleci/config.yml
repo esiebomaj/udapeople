@@ -113,14 +113,11 @@ jobs:
           name: populate ansible inventory file
           command: |
               aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text >> ./.circleci/ansible/inventory.txt
-      # work space requires tar to be installed
       - persist_to_workspace:
           root: ./
           paths:
             - "./.circleci/ansible/inventory.txt"
-      - destroy-enviroment
-
-        
+      - destroy_enviroment
 
 
 workflows:
