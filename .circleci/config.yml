@@ -120,7 +120,7 @@ jobs:
             - "./.circleci/ansible/inventory.txt"
       - destroy_enviroment
 
-  configure_infrastructure:
+  configure-infrastructure:
     docker:
       - image: python:3.9.13-alpine3.16
     steps: 
@@ -134,7 +134,7 @@ jobs:
           command: apk add --update ansible
       - run:
           name: run ansible playbook
-          command: ansible-playbook -i inventory playbook.yml
+          command: cd ./.circleci/ansible && ansible-playbook -i inventory.txt configure-server.yml
 
 
 workflows:
@@ -154,4 +154,6 @@ workflows:
           requires: [build-frontend]
       - deploy-infrastructure:
           requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+      - configure-infrastructure:
+          requires: [deploy-infrastructure]
 
