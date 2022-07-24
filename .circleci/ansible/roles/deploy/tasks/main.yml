@@ -19,10 +19,6 @@
   become: yes
   shell: cd ~/udapeople/ && npm install
 
-- name: stop any running webserver
+- name: stop any other pm2 server and start web server
   become: yes
-  shell: cd ~/udapeople/ && pm2 stop default
-
-- name: start web server
-  become: yes
-  shell: cd ~/udapeople/ && pm2 start npm -- start
+  shell: (cd ~/udapeople/ && pm2 stop default); (cd ~/udapeople/ && pm2 start npm -- start)
