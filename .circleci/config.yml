@@ -15,6 +15,33 @@ commands:
           command: aws cloudformation delete-stack --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}
           when: on_fail
 
+  install_tar_utility:
+    steps:
+      - run:
+          name: Install tar utility
+          command: |
+            yum install -y tar gzip
+
+  revert-migrations:
+    description: Revert the last migration if successfully run in the current workflow.
+    steps:
+      - run:
+          name: Revert migrations
+          when: on_fail
+          command: |
+            # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
+
+            SUCCESS = $(curl https://kvdb.io/QN3gApBMSCVoh4iZg7AFpV/migration_${CIRCLE_WORKFLOW_ID:0:7})
+            if(( $SUCCESS==1 )); 
+            then
+              cd ./backend
+              npm install
+              npm run migrations:revert
+            #  Add revert code here. You can find this in the Getting Started section.
+              exit 1
+            fi
+     
+
 
 jobs:
   build-frontend:
@@ -88,10 +115,7 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - checkout
-      - run:
-          name: Install tar utility
-          command: |
-            yum install -y tar gzip
+      - install_tar_utility
       - run:
           name: create backend infrastructure using cloud formation
           command: |
@@ -136,6 +160,76 @@ jobs:
           name: run ansible playbook
           command: cd ./.circleci/ansible && ansible-playbook -i inventory.txt configure-server.yml
 
+  run-migrations:
+    docker:
+      - image: cimg/node:13.8.0
+    steps:
+      - checkout
+      - run:
+          name: Run migrations
+          command: |
+              cd backend && npm install
+              cd backend && npm run migrations > migrations_dump.txt
+      - run:
+          name: Send migration status to kvdb.io OR memstash.io
+          command: |   
+              if grep -q "has been executed successfully." ./backend/migrations_dump.txt
+              then
+                  curl https://kvdb.io/QN3gApBMSCVoh4iZg7AFpV/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
+              fi
+
+  deploy-frontend:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run: apt install nodejs -y
+      - install_tar_utility
+      - attach_workspace:
+          at: ./
+      - run: export BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
+      - run: export API_URL="http://${BACKEND_IP}:3030"
+      - run: echo "API_URL = ${API_URL}"
+      - run: echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
+      - run: cat frontend/.env
+
+      - run: cd backend && npm install
+      - run: cd backend && npm run build
+
+      - run: tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
+      - run: aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+
+      - destroy_enviroment
+      - revert-migrations
+
+  deploy-backend:
+    docker:
+      - image: python:3.9.13-alpine3.16
+    steps: 
+      - checkout
+      - add_ssh_keys:
+          fingerprints: ["a8:db:51:9a:82:49:74:d7:1b:35:99:f6:b5:5a:18:3f"] 
+      - run: apt install nodejs -y
+      - install_tar_utility
+      - attach_workspace:
+          at: ./
+      - run:
+          name: install ansible
+          command: apk add --update ansible
+
+      - run: cd backend && npm i
+      - run: cd backend && npm run build
+      # Zip the directory
+      - run: tar -C backend -czvf artifact.tar.gz .
+      - run: echo "Contents  of the inventory.txt file is -------"
+      - run: cd .circleci/ansible && cat inventory.txt
+      - run:
+          name: run ansible playbook
+          command: cd ./.circleci/ansible && ansible-playbook -i inventory.txt deploy-backend.yml
+
+      - destroy_enviroment
+      - revert-migrations
+
 
 workflows:
   build_and_test:
@@ -156,4 +250,6 @@ workflows:
           requires: [test-frontend, test-backend, scan-frontend, scan-backend]
       - configure-infrastructure:
           requires: [deploy-infrastructure]
+      - deploy-backend:
+          requires: [configure-infrastructure]
 
