@@ -31,7 +31,7 @@ commands:
           command: |
             # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
 
-            SUCCESS = $(curl https://kvdb.io/QN3gApBMSCVoh4iZg7AFpV/migration_${CIRCLE_WORKFLOW_ID:0:7})
+            SUCCESS=$(curl https://kvdb.io/QN3gApBMSCVoh4iZg7AFpV/migration_${CIRCLE_WORKFLOW_ID:0:7})
             if(( $SUCCESS==1 )); 
             then
               cd ./backend
@@ -183,7 +183,7 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - checkout
-      - run: yum install -y nodejs
+      - run: apt install -y nodejs
       - install_tar_utility
       - attach_workspace:
           at: ./
@@ -209,8 +209,8 @@ jobs:
       - checkout
       - add_ssh_keys:
           fingerprints: ["a8:db:51:9a:82:49:74:d7:1b:35:99:f6:b5:5a:18:3f"] 
-      - run: yum install -y nodejs
-      - run: yum install -y python3
+      - run: apt install -y nodejs
+      - run: apt install -y python3
       - install_tar_utility
       - attach_workspace:
           at: ./
