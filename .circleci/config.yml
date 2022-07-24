@@ -183,7 +183,8 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - checkout
-      - run: yum install nodejs -y
+      - run: yum update -y 
+      - run: yum -y install nodejs 
       - install_tar_utility
       - attach_workspace:
           at: ./
