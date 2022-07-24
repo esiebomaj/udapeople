@@ -20,7 +20,8 @@
   shell: cd ~/udapeople/ && npm install
 
 - name: view directory
-- shell: chdir="~/udapeople/" ls
+  become: yes
+  shell: chdir="~/udapeople/" ls
   register: result
   tags: t1
 
