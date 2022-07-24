@@ -189,7 +189,8 @@ jobs:
       - install_tar_utility
       - attach_workspace:
           at: ./
-        
+
+      - run: export TERM=msys
       - run: aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text
       - run: export BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
       - run: echo $BACKEND_IP
