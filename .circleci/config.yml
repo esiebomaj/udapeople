@@ -204,12 +204,13 @@ jobs:
 
   deploy-backend:
     docker:
-      - image: python:3.9.13-alpine3.16
+      - image: amazon/aws-cli
     steps: 
       - checkout
       - add_ssh_keys:
           fingerprints: ["a8:db:51:9a:82:49:74:d7:1b:35:99:f6:b5:5a:18:3f"] 
       - run: yum install -y nodejs
+      - run: yum install -y python3
       - install_tar_utility
       - attach_workspace:
           at: ./
