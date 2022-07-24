@@ -183,6 +183,7 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - checkout
+      - run: curl --silent --location https://rpm.nodesource.com/setup_16.x | bash -
       - run: yum update -y 
       - run: yum -y install nodejs 
       - install_tar_utility
@@ -200,8 +201,8 @@ jobs:
       - run: tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
       - run: aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
 
-      - destroy_enviroment
-      - revert-migrations
+      # - destroy_enviroment
+      # - revert-migrations
 
   deploy-backend:
     docker:
