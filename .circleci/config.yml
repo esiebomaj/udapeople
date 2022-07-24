@@ -113,11 +113,28 @@ jobs:
           name: populate ansible inventory file
           command: |
               aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text >> ./.circleci/ansible/inventory.txt
+      - run: cat ./.circleci/ansible/inventory.txt
       - persist_to_workspace:
           root: ./
           paths:
             - "./.circleci/ansible/inventory.txt"
       - destroy_enviroment
+
+  configure_infrastructure:
+    docker:
+      - image: python:3.9.13-alpine3.16
+    steps: 
+      - checkout
+      - add_ssh_keys:
+          fingerprints: ["a8:db:51:9a:82:49:74:d7:1b:35:99:f6:b5:5a:18:3f"] 
+      - attach_workspace:
+          at: ./
+      - run:
+          name: install ansible
+          command: apk add --update ansible
+      - run:
+          name: run ansible playbook
+          command: ansible-playbook -i inventory playbook.yml
 
 
 workflows:
