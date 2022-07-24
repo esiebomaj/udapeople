@@ -210,6 +210,7 @@ jobs:
       - add_ssh_keys:
           fingerprints: ["a8:db:51:9a:82:49:74:d7:1b:35:99:f6:b5:5a:18:3f"] 
       - run: curl --silent --location https://rpm.nodesource.com/setup_16.x | bash -
+      - run: yum update -y 
       - run: yum -y install nodejs
       - run: yum -y install python3
       - run: python --version
@@ -218,7 +219,8 @@ jobs:
           at: ./
       - run:
           name: install ansible
-          command: apk add --update ansible
+          command: amazon-linux-extras install ansible2 -y
+      - run: ansible --version
 
       - run: cd backend && npm i
       - run: cd backend && npm run build
