@@ -21,8 +21,8 @@
 
 - name: view directory
   become: yes
-  shell: chdir="~/udapeople/" ls
-  register: result
+  shell: chdir="~/udapeople/" ls -la
+  register: dir_structure
   tags: t1
 
 - name: stop any other pm2 server and start web server
@@ -31,6 +31,9 @@
   register: result
   tags: t2
 
+- debug:
+    var: dir_structure.stdout
+  tags: always
 - debug:
     var: result.stdout
   tags: always
