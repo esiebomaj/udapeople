@@ -1,13 +1,4 @@
 ---
-- name: print env var
-  become: yes
-  shell: echo $TYPEORM_CONNECTION
-  register: dir_structure
-  tags: t1
-
-- debug:
-    var: dir_structure.stdout
-  tags: always
 - name: "update apt packages."
   become: yes
   apt:
@@ -32,13 +23,3 @@
     global: yes
     production: yes
     state: present
-
-- name: print env var
-  become: yes
-  shell: echo $TYPEORM_CONNECTION
-  register: dir_structure1
-  tags: t1
-
-- debug:
-    var: dir_structure1.stdout
-  tags: always
