@@ -1,16 +1,16 @@
 version: 2.1
 
-orbs: 
+orbs:
   slack: circleci/slack@4.10.1
 
 commands:
   destroy_enviroment:
     steps:
-      - run: 
+      - run:
           name: destroy backend enviroment
           command: aws cloudformation delete-stack --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}
           when: on_fail
-      - run: 
+      - run:
           name: destroy frontend enviroment
           command: aws cloudformation delete-stack --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}
           when: on_fail
@@ -40,8 +40,6 @@ commands:
             #  Add revert code here. You can find this in the Getting Started section.
               exit 1
             fi
-     
-
 
 jobs:
   build-frontend:
@@ -136,7 +134,7 @@ jobs:
       - run:
           name: populate ansible inventory file
           command: |
-              aws ec2 describe-instances --filters Name=tag:Name,Values="backend-${CIRCLE_WORKFLOW_ID:0:7}" --query 'Reservations[*].Instances[*].PublicIpAddress' --output text >> ./.circleci/ansible/inventory.txt
+            aws ec2 describe-instances --filters Name=tag:Name,Values="backend-${CIRCLE_WORKFLOW_ID:0:7}" --query 'Reservations[*].Instances[*].PublicIpAddress' --output text >> ./.circleci/ansible/inventory.txt
       - run: cat ./.circleci/ansible/inventory.txt
       - persist_to_workspace:
           root: ./
@@ -147,10 +145,10 @@ jobs:
   configure-infrastructure:
     docker:
       - image: python:3.9.13-alpine3.16
-    steps: 
+    steps:
       - checkout
       - add_ssh_keys:
-          fingerprints: ["a8:db:51:9a:82:49:74:d7:1b:35:99:f6:b5:5a:18:3f"] 
+          fingerprints: ["a8:db:51:9a:82:49:74:d7:1b:35:99:f6:b5:5a:18:3f"]
       - attach_workspace:
           at: ./
       - run:
@@ -168,15 +166,15 @@ jobs:
       - run:
           name: Run migrations
           command: |
-              cd backend && npm install
-              npm run migrations > migrations_dump.txt
+            cd backend && npm install
+            npm run migrations > migrations_dump.txt
       - run:
           name: Send migration status to kvdb.io OR memstash.io
-          command: |   
-              if grep -q "has been executed successfully." ./backend/migrations_dump.txt
-              then
-                  curl https://kvdb.io/QN3gApBMSCVoh4iZg7AFpV/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
-              fi
+          command: |
+            if grep -q "has been executed successfully." ./backend/migrations_dump.txt
+            then
+                curl https://kvdb.io/QN3gApBMSCVoh4iZg7AFpV/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
+            fi
 
   deploy-frontend:
     docker:
@@ -187,8 +185,8 @@ jobs:
       - checkout
       - run: echo $TERM
       - run: curl --silent --location https://rpm.nodesource.com/setup_16.x | bash -
-      - run: yum update -y 
-      - run: yum -y install nodejs 
+      - run: yum update -y
+      - run: yum -y install nodejs
       - install_tar_utility
       - attach_workspace:
           at: ./
@@ -212,17 +210,15 @@ jobs:
       - destroy_enviroment
       - revert-migrations
 
-
-
   deploy-backend:
     docker:
       - image: amazon/aws-cli
-    steps: 
+    steps:
       - checkout
       - add_ssh_keys:
-          fingerprints: ["a8:db:51:9a:82:49:74:d7:1b:35:99:f6:b5:5a:18:3f"] 
+          fingerprints: ["a8:db:51:9a:82:49:74:d7:1b:35:99:f6:b5:5a:18:3f"]
       - run: curl --silent --location https://rpm.nodesource.com/setup_16.x | bash -
-      - run: yum update -y 
+      - run: yum update -y
       - run: yum -y install nodejs
       - run: yum -y install python3
       - run: python --version
@@ -240,6 +236,7 @@ jobs:
       - run: cd backend && ls
       - run: cd backend/dist && ls
       - run: tar -C ./backend/dist -czvf ./.circleci/ansible/roles/deploy/files/artifact.tar.gz .
+      - run: cd backend && cp ./package.json ../.circleci/ansible/roles/deploy/files/
       - run: echo "Contents  of the inventory.txt file is -------"
       - run: cd .circleci/ansible && cat inventory.txt
       # - run:
@@ -248,7 +245,7 @@ jobs:
 
       - destroy_enviroment
       - revert-migrations
-  
+
   smoke-test:
     docker:
       - image: amazon/aws-cli
@@ -311,7 +308,6 @@ workflows:
       # - deploy-frontend:
       #     requires: [run-migrations]
       - deploy-backend
-          # requires: [run-migrations]
+        # requires: [run-migrations]
       # - smoke-test:
       #     requires: [deploy-frontend, deploy-backend]
-

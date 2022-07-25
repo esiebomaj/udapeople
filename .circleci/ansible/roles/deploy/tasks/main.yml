@@ -11,6 +11,12 @@
     src: artifact.tar.gz
     dest: ~/udapeople/artifact.tar.gz
 
+- name: copy web package.json
+  become: yes
+  copy:
+    src: package.json
+    dest: ~/udapeople/package.json
+
 - name: extract server files
   become: yes
   shell: tar -xvzf ~/udapeople/artifact.tar.gz -C ~/udapeople/
