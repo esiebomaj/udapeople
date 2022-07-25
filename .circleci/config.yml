@@ -300,7 +300,7 @@ workflows:
       # - scan-frontend:
       #     context: slack
       #     requires: [build-frontend]
-      
+
       - deploy-infrastructure
           # requires: [test-frontend, test-backend, scan-frontend, scan-backend]
       # - configure-infrastructure:
@@ -309,6 +309,6 @@ workflows:
           requires: [deploy-infrastructure]
       # - deploy-backend:
       #     requires: [configure-infrastructure]
-      - smoke-test:
-          requires: [deploy-frontend]
+      # - smoke-test:
+      #     requires: [deploy-frontend]
 
