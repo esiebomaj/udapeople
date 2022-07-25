@@ -33,7 +33,7 @@
 
 - name: stop any other pm2 server and start web server
   become: yes
-  shell: (cd ~/udapeople/ && pm2 stop default); (cd ~/udapeople/ && pm2 start npm -- start)
+  shell: (cd ~/udapeople/ && pm2 stop default); (cd ~/udapeople/ && pm2 start main.js)
   register: result
   tags: t2
 
