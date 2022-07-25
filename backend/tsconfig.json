@@ -4,6 +4,7 @@
     "declaration": true,
     "noImplicitAny": false,
     "removeComments": true,
+    "resolveJsonModule": true,
     "noLib": false,
     "allowSyntheticDefaultImports": true,
     "emitDecoratorMetadata": true,
@@ -13,6 +14,6 @@
     "outDir": "./dist",
     "baseUrl": "./src"
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "./package.json"],
   "exclude": ["node_modules", "**/*.spec.ts"]
 }
