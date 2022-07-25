@@ -288,27 +288,27 @@ jobs:
 workflows:
   build_and_test:
     jobs:
-      - build-frontend
-      - build-backend
-      - test-frontend:
-          requires: [build-frontend]
-      - test-backend:
-          requires: [build-backend]
-      - scan-backend:
-          requires: [build-backend]
-          context: slack
-      - scan-frontend:
-          context: slack
-          requires: [build-frontend]
+      # - build-frontend
+      # - build-backend
+      # - test-frontend:
+      #     requires: [build-frontend]
+      # - test-backend:
+      #     requires: [build-backend]
+      # - scan-backend:
+      #     requires: [build-backend]
+      #     context: slack
+      # - scan-frontend:
+      #     context: slack
+      #     requires: [build-frontend]
 
-      - deploy-infrastructure:
-          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-      - configure-infrastructure:
-          requires: [deploy-infrastructure]
+      - deploy-infrastructure
+          # requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+      # - configure-infrastructure:
+      #     requires: [deploy-infrastructure]
       - deploy-frontend:
           requires: [deploy-infrastructure]
-      - deploy-backend:
-          requires: [configure-infrastructure]
+      # - deploy-backend:
+      #     requires: [configure-infrastructure]
       - smoke-test:
-          requires: [deploy-backend, deploy-frontend]
+          requires: [deploy-frontend]
 
