@@ -280,34 +280,33 @@ jobs:
               return 1
             fi
 
-      # - destroy_enviroment
-      # - revert-migrations
+      - destroy_enviroment
+      - revert-migrations
 
 workflows:
   build_and_test:
     jobs:
-      # - build-frontend
-      # - build-backend
-      # - test-frontend:
-      #     requires: [build-frontend]
-      # - test-backend:
-      #     requires: [build-backend]
-      # - scan-backend:
-      #     requires: [build-backend]
-      #     context: slack
-      # - scan-frontend:
-      #     context: slack
-      #     requires: [build-frontend]
-
-      - deploy-infrastructure
-        # requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-      # - configure-infrastructure:
-      #     requires: [deploy-infrastructure]
-      - run-migrations:
+      - build-frontend
+      - build-backend
+      - test-frontend:
+          requires: [build-frontend]
+      - test-backend:
+          requires: [build-backend]
+      - scan-backend:
+          requires: [build-backend]
+          context: slack
+      - scan-frontend:
+          context: slack
+          requires: [build-frontend]
+      - deploy-infrastructure:
+        requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+      - configure-infrastructure:
           requires: [deploy-infrastructure]
-      # - deploy-frontend:
-      #     requires: [run-migrations]
+      - run-migrations:
+          requires: [configure-infrastructure]
+      - deploy-frontend:
+          requires: [run-migrations]
       - deploy-backend:
           requires: [run-migrations]
       - smoke-test:
-          requires: [deploy-backend]
+          requires: [deploy-backend, deploy-frontend]
