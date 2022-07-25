@@ -1,45 +1,39 @@
 ---
-- name: Creates web directory
+- name: "update and upgrade packages."
   become: yes
-  file:
-    path: ~/udapeople
-    state: directory
+  apt:
+    upgrade: yes
+    update_cache: yes
+    cache_valid_time: 86400
 
-- name: copy web server files
+- name: remove unneeded deps
   become: yes
-  copy:
-    src: artifact.tar.gz
-    dest: ~/udapeople/artifact.tar.gz
-
-- name: copy web package.json
-  become: yes
-  copy:
-    src: package.json
-    dest: ~/udapeople/package.json
-
-- name: extract server files
-  become: yes
-  shell: tar -xvzf ~/udapeople/artifact.tar.gz -C ~/udapeople/
+  apt:
+    autoremove: yes
 
 - name: install deps
   become: yes
-  shell: cd ~/udapeople/ && npm install
+  apt:
+    name: ["nodejs", "npm"]
+    state: latest
+    update_cache: yes
 
-- name: view directory
+- name: install pm2
   become: yes
-  shell: chdir="~/udapeople/" ls -la
-  register: dir_structure
-  tags: t1
+  npm:
+    name: pm2
+    global: yes
+    state: latest
+    production: yes
 
-- name: stop any other pm2 server and start web server
+- name: extract artifact
   become: yes
-  shell: (cd ~/udapeople/ && pm2 stop default); (cd ~/udapeople/ && pm2 start main.js)
-  register: result
-  tags: t2
+  unarchive:
+    src: files/artifact.tar.gz
+    dest: .
 
-- debug:
-    var: dir_structure.stdout
-  tags: always
-- debug:
-    var: result.stdout
-  tags: always
+- name: start app
+  become: yes
+  shell: |
+    pm2 delete all
+    pm2 start npm -- start

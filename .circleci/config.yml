@@ -229,20 +229,19 @@ jobs:
           name: install ansible
           command: amazon-linux-extras install ansible2 -y
       - run: ansible --version
-
-      - run: cd backend && npm i
-      - run: cd backend && npm run build
-      # Zip the directory
-      - run: cd backend && ls
-      - run: cd backend/dist && ls
-      - run: tar -C ./backend/dist -czvf ./.circleci/ansible/roles/deploy/files/artifact.tar.gz .
-      - run: cd backend && cp ./package.json ../.circleci/ansible/roles/deploy/files/
-      - run: echo "Contents  of the inventory.txt file is -------"
-      - run: cd .circleci/ansible && cat inventory.txt
       - run:
-          name: run ansible playbook
-          command: cd ./.circleci/ansible && ansible-playbook -i inventory.txt deploy-backend.yml
-
+          name: Deploy backend
+          command: |
+            cd backend
+            npm install
+            npm run build
+            cd ..
+            tar -C backend -czvf artifact.tar.gz .
+            mkdir -p ~/project/.circleci/ansible/roles/deploy/files/
+            mv artifact.tar.gz .circleci/ansible/roles/deploy/files/artifact.tar.gz
+            cd .circleci/ansible
+            echo "Contents of the inventory.txt file is ------$(cat inventory.txt)"
+            ansible-playbook -i inventory.txt deploy-backend.yml
       - destroy_enviroment
       - revert-migrations
 
@@ -287,28 +286,28 @@ jobs:
 workflows:
   build_and_test:
     jobs:
-      - build-frontend
-      - build-backend
-      - test-frontend:
-          requires: [build-frontend]
-      - test-backend:
-          requires: [build-backend]
-      - scan-backend:
-          requires: [build-backend]
-          context: slack
-      - scan-frontend:
-          context: slack
-          requires: [build-frontend]
+      # - build-frontend
+      # - build-backend
+      # - test-frontend:
+      #     requires: [build-frontend]
+      # - test-backend:
+      #     requires: [build-backend]
+      # - scan-backend:
+      #     requires: [build-backend]
+      #     context: slack
+      # - scan-frontend:
+      #     context: slack
+      #     requires: [build-frontend]
 
-      - deploy-infrastructure:
-          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-      - configure-infrastructure:
-          requires: [deploy-infrastructure]
+      - deploy-infrastructure
+        # requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+      # - configure-infrastructure:
+      #     requires: [deploy-infrastructure]
       - run-migrations:
-          requires: [configure-infrastructure]
-      - deploy-frontend:
-          requires: [run-migrations]
+          requires: [deploy-infrastructure]
+      # - deploy-frontend:
+      #     requires: [run-migrations]
       - deploy-backend:
           requires: [run-migrations]
       - smoke-test:
-          requires: [deploy-frontend, deploy-backend]
+          requires: [deploy-backend]

@@ -17,9 +17,9 @@
     update_cache: yes
 
 - name: install pm2
-  become: true
-  community.general.npm:
+  become: yes
+  npm:
     name: pm2
     global: yes
+    state: latest
     production: yes
-    state: present
