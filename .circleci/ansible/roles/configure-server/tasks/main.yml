@@ -1,4 +1,13 @@
 ---
+- name: print env var
+  become: yes
+  shell: echo $TYPEORM_CONNECTION
+  register: dir_structure
+  tags: t1
+
+- debug:
+    var: dir_structure.stdout
+  tags: always
 - name: "update apt packages."
   become: yes
   apt:
@@ -24,18 +33,12 @@
     production: yes
     state: present
 
-- name: Basic usage 1
-  ansible.builtin.debug:
-    msg: "'{{ lookup('env', 'HOME') }}' is the HOME environment variable."
+- name: print env var
+  become: yes
+  shell: echo $TYPEORM_CONNECTION
+  register: dir_structure1
+  tags: t1
 
-- name: Basic usage 4
-  ansible.builtin.debug:
-    msg: "'{{ lookup('env', 'TYPEORM_ENTITIES') }}' is the HOME environment variable."
-
-- name: Basic usage 2
-  ansible.builtin.debug:
-    msg: "'{{ lookup('ansible.builtin.env', 'TYPEORM_ENTITIES') }}' is the TYPEORM_ENTITIES environment variable."
-
-- name: Basic usage 3
-  ansible.builtin.debug:
-    msg: "'{{ lookup('env', 'TYPEORM_ENTITIES') }}' is the TYPEORM_ENTITIES environment variable."
+- debug:
+    var: dir_structure1.stdout
+  tags: always
