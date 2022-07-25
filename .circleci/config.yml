@@ -194,9 +194,8 @@ jobs:
           at: ./
       - run: aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text
       - run: echo "export BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)" >> $BASH_ENV; source $BASH_ENV
-      # - run: export BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
       - run: echo $BACKEND_IP
-      - run: export API_URL="http://${BACKEND_IP}:3030"
+      - run: echo "export API_URL="http://${BACKEND_IP}:3030"" >> $BASH_ENV; source $BASH_ENV
       - run: echo "API_URL = ${API_URL}"
       - run: echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
       - run: cat frontend/.env
