@@ -253,16 +253,15 @@ jobs:
     steps:
       - checkout
       - install_tar_utility
-      - attach_workspace:
-          at: ./
       - run:
           name: Get backend url
           command: |
-            export BACKEND_IP=$(cat .frontend/.env)
+            - run: echo "export BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)" >> $BASH_ENV; source $BASH_ENV
+      - run: echo $BACKEND_IP
       - run:
           name: Backend smoke test.
           command: |
-            export API_URL="http://${BACKEND_IP}:3030"
+            echo "export API_URL="http://${BACKEND_IP}:3030"">> $BASH_ENV; source $BASH_ENV
             echo "${API_URL}"
             if curl "${API_URL}/api/status" | grep "ok"
             then
@@ -277,8 +276,8 @@ jobs:
             echo ${URL} 
             if curl -s ${URL} | grep "Welcome"
             then
-                # Change this to 0 after the job fails
-              return 1
+              # Change this to 0 after the job fails
+              return 0
             else
               return 1
             fi
@@ -309,4 +308,6 @@ workflows:
           requires: [deploy-infrastructure]
       # - deploy-backend:
       #     requires: [configure-infrastructure]
+      - smoke-test:
+          requires: [deploy-frontend]
 
