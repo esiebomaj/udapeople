@@ -136,7 +136,7 @@ jobs:
       - run:
           name: populate ansible inventory file
           command: |
-              aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text >> ./.circleci/ansible/inventory.txt
+              aws ec2 describe-instances --filters Name=Name,Values="backend-${CIRCLE_WORKFLOW_ID:0:7}" --query 'Reservations[*].Instances[*].PublicIpAddress' --output text >> ./.circleci/ansible/inventory.txt
       - run: cat ./.circleci/ansible/inventory.txt
       - persist_to_workspace:
           root: ./
@@ -192,8 +192,8 @@ jobs:
       - install_tar_utility
       - attach_workspace:
           at: ./
-      - run: aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text
-      - run: echo "export BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)" >> $BASH_ENV; source $BASH_ENV
+      - run: aws ec2 describe-instances --filters Name=Name,Values="backend-${CIRCLE_WORKFLOW_ID:0:7}" --query 'Reservations[*].Instances[*].PublicIpAddress' --output text
+      - run: echo "export BACKEND_IP=$(aws ec2 describe-instances --filters Name=Name,Values="backend-${CIRCLE_WORKFLOW_ID:0:7}" --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)" >> $BASH_ENV; source $BASH_ENV
       - run: echo $BACKEND_IP
       - run: echo "export API_URL="http://${BACKEND_IP}:3030"" >> $BASH_ENV; source $BASH_ENV
       - run: echo "API_URL = ${API_URL}"
@@ -256,7 +256,7 @@ jobs:
       - run:
           name: Get backend url
           command: |
-            - run: echo "export BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)" >> $BASH_ENV; source $BASH_ENV
+            echo "export BACKEND_IP=$(aws ec2 describe-instances --filters Name=Name,Values="backend-${CIRCLE_WORKFLOW_ID:0:7}" --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)" >> $BASH_ENV; source $BASH_ENV
       - run: echo $BACKEND_IP
       - run:
           name: Backend smoke test.
