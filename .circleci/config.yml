@@ -237,12 +237,14 @@ jobs:
       - run: cd backend && npm i
       - run: cd backend && npm run build
       # Zip the directory
+      - run: cd backend && ls
+      - run: cd backend/dist && ls
       - run: tar -C ./backend/dist -czvf ./.circleci/ansible/roles/deploy/files/artifact.tar.gz .
       - run: echo "Contents  of the inventory.txt file is -------"
       - run: cd .circleci/ansible && cat inventory.txt
-      - run:
-          name: run ansible playbook
-          command: cd ./.circleci/ansible && ansible-playbook -i inventory.txt deploy-backend.yml
+      # - run:
+      #     name: run ansible playbook
+      #     command: cd ./.circleci/ansible && ansible-playbook -i inventory.txt deploy-backend.yml
 
       - destroy_enviroment
       - revert-migrations
@@ -287,29 +289,29 @@ jobs:
 workflows:
   build_and_test:
     jobs:
-      - build-frontend
-      - build-backend
-      - test-frontend:
-          requires: [build-frontend]
-      - test-backend:
-          requires: [build-backend]
-      - scan-backend:
-          requires: [build-backend]
-          context: slack
-      - scan-frontend:
-          context: slack
-          requires: [build-frontend]
+      # - build-frontend
+      # - build-backend
+      # - test-frontend:
+      #     requires: [build-frontend]
+      # - test-backend:
+      #     requires: [build-backend]
+      # - scan-backend:
+      #     requires: [build-backend]
+      #     context: slack
+      # - scan-frontend:
+      #     context: slack
+      #     requires: [build-frontend]
 
-      - deploy-infrastructure:
-          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-      - configure-infrastructure:
-          requires: [deploy-infrastructure]
-      - run-migrations:
-          requires: [configure-infrastructure]
-      - deploy-frontend:
-          requires: [run-migrations]
-      - deploy-backend:
-          requires: [run-migrations]
+      # - deploy-infrastructure:
+      #     requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+      # - configure-infrastructure:
+      #     requires: [deploy-infrastructure]
+      # - run-migrations:
+      #     requires: [configure-infrastructure]
+      # - deploy-frontend:
+      #     requires: [run-migrations]
+      - deploy-backend
+          # requires: [run-migrations]
       # - smoke-test:
       #     requires: [deploy-frontend, deploy-backend]
 
