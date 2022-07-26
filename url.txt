@@ -1,0 +1,2 @@
+[URL01]: https://github.com/esiebomaj/udapeople
+[URL02]: http://udapeople-011f956.s3-website-us-east-1.amazonaws.com/#/employees
