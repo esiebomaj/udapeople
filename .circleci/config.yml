@@ -367,11 +367,11 @@ workflows:
 
       # deployment jobs only run on master
       - deploy-infrastructure:
-        requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-        filters:
-          branches:
-            only:
-              - master
+          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+          filters:
+            branches:
+              only:
+                - master
       - configure-infrastructure:
           requires: [deploy-infrastructure]
           filters:
@@ -414,9 +414,9 @@ workflows:
             branches:
               only:
                 - master
-      - cleanup:
-          requires: [cloudfront-update]
-          filters:
-            branches:
-              only:
-                - master
+      # - cleanup:
+      #     requires: [cloudfront-update]
+      #     filters:
+      #       branches:
+      #         only:
+      #           - master
