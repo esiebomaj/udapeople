@@ -338,7 +338,7 @@ jobs:
           command: |
             apk add --update aws-cli tar gzip ansible nodejs npm
       - attach_workspace:
-          at: ~/
+          at: ./
       - run:
           name: Setup Prometheus Node Exporter
           command: |
