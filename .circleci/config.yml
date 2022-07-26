@@ -338,7 +338,7 @@ jobs:
           command: |
             apk add --update aws-cli tar gzip ansible nodejs npm
       - attach_workspace:
-          at: ~/
+          at: ./
       - run:
           name: Setup Prometheus Node Exporter
           command: |
@@ -372,20 +372,20 @@ workflows:
         #   branches:
         #     only:
         #       - master
-      - add-prometheus-node-exporter:
+      - configure-infrastructure:
           requires: [deploy-infrastructure]
           filters:
             branches:
               only:
                 - master
-      - configure-infrastructure:
-          requires: [add-prometheus-node-exporter]
+      - add-prometheus-node-exporter:
+          requires: [configure-infrastructure]
           filters:
             branches:
               only:
                 - master
       - run-migrations:
-          requires: [configure-infrastructure]
+          requires: [add-prometheus-node-exporter]
           filters:
             branches:
               only:
